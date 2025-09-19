@@ -8,6 +8,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+*/.env.example
 # Thư mục tạm hoặc cache
 dist/
 build/
@@ -23,8 +24,6 @@ frontend\.env
 yarn.lock
 .backend.env
 .frontend.env
-# Tệp lock (tùy chọn)
-package-lock.json
 yarn.lock
 # IDE/editor config (Visual Studio Code, JetBrains...)
 .vscode/
