@@ -263,7 +263,8 @@ const LoginPage = ({ setIsLoggedIn }) => {
                 variant="outlined"
                 fullWidth
                 onClick={() =>
-                    (window.location.href = `${process.env.REACT_APP_API_URL}/auth/facebook`)
+                    // (window.location.href = `${process.env.REACT_APP_API_URL}/auth/facebook`)
+                    console.log("Facebook Login")
                 }
                 sx={{
                     fontWeight: "bold",

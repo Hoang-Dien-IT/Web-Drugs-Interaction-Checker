@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cloudinary/react": "^1.14.3",
+    "@cloudinary/url-gen": "^1.22.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.8",
@@ -17,7 +19,6 @@
     "google-auth-library": "^9.15.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-facebook-login": "^4.1.1",
     "react-facebook-login-lite": "^1.0.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.0",

@@ -497,7 +497,7 @@ const HomePage = () => {
           {[
             { label: 'Cặp tương tác thuốc', value: '20,000+' },
             { label: 'Loại thuốc', value: '9,000+' },
-            { label: 'Tương tác đã kiểm tra', value: '200+' },
+            { label: 'Tương tác đã kiểm tra', value: '1700+' },
           ].map((stat, index) => (
             <Box
               key={index}

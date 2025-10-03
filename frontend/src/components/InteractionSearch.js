@@ -17,13 +17,17 @@ import {
     // CardContent,
     // CardHeader,
     Avatar,
+    Snackbar,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
+import UploadIcon from "@mui/icons-material/Upload";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import RestartAltIcon from "@mui/icons-material/RestartAlt"; // Import icon cho nút "Bắt đầu lại"
+import { Cloudinary } from "@cloudinary/url-gen";
+// import CloudinaryUploadWidget from "./CloudinaryUploadWidget";
 
 const InteractionSearch = () => {
     const [drugName, setDrugName] = useState("");
@@ -34,20 +38,42 @@ const InteractionSearch = () => {
     const [noInteractions, setNoInteractions] = useState(false);
     const [noDrugsFound, setNoDrugsFound] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
-    const [, setAllDrugs] = useState([]);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
-    useEffect(() => {
-        const fetchAllDrugs = async () => {
-            try {
-                const response = await axios.get("/drugs");
-                setAllDrugs(response.data.map((drug) => drug.tenThuoc));
-            } catch (error) {
-                console.error("Lỗi khi lấy danh sách tất cả các thuốc:", error);
+    const [publicUrDocument, setPublicUrDocument] = useState("");
+    var myWidget = window.cloudinary.createUploadWidget(
+        {
+            cloudName: process.env.REACT_APP_CLOUD_NAME,
+            uploadPreset: process.env.REACT_APP_UPLOAD_PRESET,
+            clientAllowedFormats: ["png", "jpeg", "jpg", "pdf"],
+            maxImageFileSize: 2000000,
+            maxImageWidth: 2000,
+        },
+        (error, result) => {
+            if (!error && result && result.event === "success") {
+                console.log(
+                    "Done! Here is the image info: ",
+                    result.info
+                );
+                setPublicUrDocument(result.info.url);
+            } else if (error) {
+                console.error("Upload error:", error);
             }
-        };
+        }
+    );
+    // useEffect(() => {
+    //     const fetchAllDrugs = async () => {
+    //         try {
+    //             const response = await axios.get("/drugs");
+    //             setAllDrugs(response.data.map((drug) => drug.tenThuoc));
+    //         } catch (error) {
+    //             console.error("Lỗi khi lấy danh sách tất cả các thuốc:", error);
+    //         }
+    //     };
 
-        fetchAllDrugs();
-    }, []);
+    //     fetchAllDrugs();
+    // }, []);
 
     const fetchSuggestions = async (keyword) => {
         if (!keyword) {
@@ -64,17 +90,15 @@ const InteractionSearch = () => {
         }
     };
 
-    const handleAddDrug = () => {
-        // Chỉ cho phép thêm thuốc nếu có trong danh sách gợi ý
-        if (
-            drugName.trim() &&
-            suggestions.includes(drugName.trim()) &&
-            !drugList.includes(drugName.trim())
-        ) {
-            setDrugList([...drugList, drugName.trim()]); // Thêm thuốc vào danh sách
+    const handleUpLoadDocuments = () => {
+        try {
+            myWidget.open();
+        } catch (error) {
+            console.error("Lỗi khi tạo upload widget:", error);
+            alert("Không thể mở upload widget. Vui lòng thử lại.");
         }
-        setDrugName(""); // Reset thanh nhập tên thuốc
     };
+
 
     const handleRemoveDrug = (drug) => {
         setDrugList(drugList.filter((d) => d !== drug));
@@ -170,49 +194,60 @@ const InteractionSearch = () => {
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <Autocomplete
                     options={suggestions}
-                    onInputChange={(event, value) => {
-                        setDrugName(value); // Cập nhật giá trị nhập
-                        fetchSuggestions(value); // Gọi API để lấy gợi ý
+                    inputValue={drugName}
+                    onInputChange={(event, value, reason) => {
+                        if (reason === "input") {
+                            setDrugName(value);
+                            fetchSuggestions(value);
+                        } else if (reason === "clear") {
+                            setDrugName("");
+                        }
+                        // reason === "reset" (sau khi chọn option) -> bỏ qua, để không ghi đè "".
                     }}
                     onChange={(event, value) => {
                         if (value && !drugList.includes(value)) {
-                            setDrugList([...drugList, value]); // Thêm thuốc vào danh sách
+                            setDrugList([...drugList, value]);
+                            setSuccessMessage(
+                                `Đã thêm thuốc "${value}" vào danh sách`
+                            );
+                            setShowSuccessMessage(true);
                         }
-                        setDrugName(""); // Reset thanh nhập tên thuốc
+                        setDrugName(""); // reset sau chọn
+
+                        // setSuggestions([]); // tùy chọn: đóng dropdown
                     }}
-                    sx={{
-                        flex: 1,
-                        mr: 2,
-                        "& .MuiAutocomplete-inputRoot": {
-                            paddingRight: "40px !important", // Đặt padding cố định cho clear button
-                        },
-                    }}
+                    filterOptions={(x) => x} // giữ nguyên danh sách từ server
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             label="Nhập tên thuốc"
                             variant="outlined"
                             fullWidth
-                            value={drugName}
-                            onKeyPress={(event) => {
-                                if (event.key === "Enter") {
-                                    handleAddDrug(); // Thêm thuốc khi nhấn Enter
-                                }
-                            }}
+                            // onKeyPress={(event) => {
+                            //     if (event.key === "Enter") {
+                            //         handleAddDrug();
+                            //     }
+                            // }}
                             sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    borderRadius: 3,
-                                },
+                                "& .MuiOutlinedInput-root": { borderRadius: 3 },
                             }}
                         />
                     )}
+                    sx={{
+                        flex: 1,
+                        mr: 2,
+                        "& .MuiAutocomplete-inputRoot": {
+                            paddingRight: "40px !important",
+                        },
+                    }}
                 />
 
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleAddDrug}
-                    startIcon={<SearchIcon />}
+                    onClick={handleUpLoadDocuments}
+                    id="upload_widget"
+                    startIcon={<UploadIcon />}
                     sx={{
                         ml: 1,
                         // py: 0.5,
@@ -227,7 +262,7 @@ const InteractionSearch = () => {
                         },
                     }}
                 >
-                    Thêm vào
+                    Tải ảnh
                 </Button>
             </Box>
 
@@ -677,6 +712,22 @@ const InteractionSearch = () => {
                     </Box>
                 </Box>
             )}
+
+            {/* Snackbar for success message */}
+            <Snackbar
+                open={showSuccessMessage}
+                autoHideDuration={3000}
+                onClose={() => setShowSuccessMessage(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={() => setShowSuccessMessage(false)}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    {successMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

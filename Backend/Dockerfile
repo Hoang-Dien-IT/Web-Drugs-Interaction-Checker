@@ -16,7 +16,7 @@ RUN npm ci --only=production && npm cache clean --force
 # Copy source code
 COPY . .
 
-# Create assets directory and set permissions
+# Create assets directory and set permissions        v
 RUN mkdir -p assets/avatars
 RUN chown -R nodeuser:nodejs /app
 USER nodeuser

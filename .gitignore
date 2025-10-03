@@ -37,7 +37,7 @@ Thumbs.db
 
 # Test coverage
 coverage/
-
+/Frontend/client_secret.json
 # PM2 (nếu dùng để chạy Node.js production)
 pids
 *.pid
