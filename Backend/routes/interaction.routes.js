@@ -9,6 +9,6 @@ router.post('/', interactionController.checkInteraction);
 
 router.get('/search', interactionController.searchDrugs);
 
-router.post('/')
+router.post('/auto-check', interactionController.autoCheckInteraction);
 
 module.exports = router;

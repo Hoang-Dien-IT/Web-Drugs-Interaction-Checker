@@ -62,18 +62,23 @@ const InteractionSearch = () => {
             }
         }
     );
-    // useEffect(() => {
-    //     const fetchAllDrugs = async () => {
-    //         try {
-    //             const response = await axios.get("/drugs");
-    //             setAllDrugs(response.data.map((drug) => drug.tenThuoc));
-    //         } catch (error) {
-    //             console.error("Lỗi khi lấy danh sách tất cả các thuốc:", error);
-    //         }
-    //     };
+    // const handleUpLoadDocuments = () => {
+    //     try {
+    //         myWidget.open();
+    //     } catch (error) {
+    //         console.error("Lỗi khi tạo upload widget:", error);
+    //         alert("Không thể mở upload widget. Vui lòng thử lại.");
+    //     }
+    // };
+    const handleUpLoadDocuments = () => {
+        try {
+            console.log("vào nút tải ảnh")
+        } catch (error) {
+            console.error("Lỗi khi tải ảnh:", error);
+            alert("Không thể mở upload widget. Vui lòng thử lại.");
+        }
+    };
 
-    //     fetchAllDrugs();
-    // }, []);
 
     const fetchSuggestions = async (keyword) => {
         if (!keyword) {
@@ -90,14 +95,6 @@ const InteractionSearch = () => {
         }
     };
 
-    const handleUpLoadDocuments = () => {
-        try {
-            myWidget.open();
-        } catch (error) {
-            console.error("Lỗi khi tạo upload widget:", error);
-            alert("Không thể mở upload widget. Vui lòng thử lại.");
-        }
-    };
 
 
     const handleRemoveDrug = (drug) => {
